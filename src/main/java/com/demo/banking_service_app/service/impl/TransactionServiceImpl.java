@@ -4,9 +4,8 @@ import com.demo.banking_service_app.entity.Transaction;
 import com.demo.banking_service_app.service.TransactionService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -41,5 +40,18 @@ public class TransactionServiceImpl implements TransactionService {
     public String deleteTransaction(int id) {
         transactions.remove(id);
         return "Successfully deleted transaction with id: "+id;
+    }
+
+    @Override
+    public List<Transaction> getAllTransactionsByAccountId(int id) {
+        return transactions.values().stream().filter(transaction -> transaction.getAccount().getId() == id).collect(Collectors.toList());
+    }
+
+    @Override
+    public Transaction getTransactionByTransactionId(int accountId, int transactionId) {
+        Optional<Transaction> transactionOptional = transactions.values().stream()
+                .filter(transaction -> transaction.getId() == transactionId && transaction.getAccount().getId() == accountId)
+                .findAny();
+        return transactionOptional.orElse(new Transaction());
     }
 }
